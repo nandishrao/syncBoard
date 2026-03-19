@@ -1,23 +1,36 @@
 import { useState } from "react";
 import axios from "axios";
-import BASE_URL from "../Constants/constants"
+import {BASE_URL} from "../Constants/constant.js"
 
 const Auth = () => {
   const [isSignup, setIsSignup] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-  const handelSignUp =()=>{
-
-  }
-  const HandelLogin = async()=>{
-    try{
-      const res = await axios.post(BASE_URL + "/register" ,
-         {name ,email,passowrd},
-         {});
-
-    }catch(err){
-      alert("something went wrong")
+  const handelSignUp = async () => {
+    try {
+      const res = await axios.post(BASE_URL + "/register", 
+        { name, email, password },
+        {});
+      alert("Signup successful!");
+    } catch(err) {
+      alert("Signup failed");
     }
-  }
+  };
+
+  const HandelLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(BASE_URL + "/login", 
+        { email, password },
+        {});
+      alert("Login successful!");
+    } catch(err) {
+      alert("Login failed");
+    }
+  };
+
   return (
     <div
       style={{
@@ -39,11 +52,13 @@ const Auth = () => {
       >
         <h2>{isSignup ? "Sign Up" : "Login"}</h2>
 
-        <form>
+        <form onSubmit={isSignup ? handelSignUp : HandelLogin}>
           {isSignup && (
             <input
               type="text"
               placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               style={{
                 width: "100%",
                 padding: "10px",
@@ -55,6 +70,8 @@ const Auth = () => {
           <input
             type="email"
             placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             style={{
               width: "100%",
               padding: "10px",
@@ -65,6 +82,8 @@ const Auth = () => {
           <input
             type="password"
             placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             style={{
               width: "100%",
               padding: "10px",
@@ -73,7 +92,6 @@ const Auth = () => {
           />
 
           <button
-           onClick={isSignup ? handelSignUp : HandelLogin}
             type="submit"
             style={{
               width: "100%",

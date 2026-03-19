@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import type { DrawLine, Tool } from "../types/whiteboard.types";
+import { socket } from "../socket";
 
 export const useWhiteboard = () => {
   const [lines, setLines] = useState<DrawLine[]>([]);
@@ -10,7 +11,20 @@ export const useWhiteboard = () => {
   const [tool, setTool] = useState<Tool>("brush");
   const [scale, setScale] = useState(1);
   const [isDrawing, setIsDrawing] = useState(false);
+useEffect(() => {
+  socket.on("draw", (line) => {
+    setLines((prev) => [...prev, line]);
+  });
 
+  socket.on("clear", () => {
+    setLines([]);
+  });
+
+  return () => {
+    socket.off("draw");
+    socket.off("clear");
+  };
+}, []);
   const handleMouseDown = (pos: { x: number; y: number }) => {
     setIsDrawing(true);
 
@@ -44,6 +58,11 @@ export const useWhiteboard = () => {
 
   const handleMouseUp = () => {
     setIsDrawing(false);
+    const lastLine = lines[lines.length - 1];
+  if (lastLine) {
+    socket.emit("draw", lastLine);
+  }
+
   };
 
   const handleUndo = () => {
@@ -73,6 +92,8 @@ export const useWhiteboard = () => {
   setHistory((prev) => [...prev, lines]);
   setRedoStack([]);
   setLines([]);
+
+  socket.emit("clear");
 };
 
   return {
