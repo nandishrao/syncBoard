@@ -48,9 +48,9 @@ const startServer = async () => {
     io.on("connection", (socket) => {
       console.log("User Connected:", socket.id);
 
-      socket.on("join-room", (roomId) => {
-        socket.join(roomId);
-        console.log(`User joined room: ${roomId}`);
+      socket.on("draw", (line) => {
+    console.log("DRAW EVENT RECEIVED"); // 👈 ADD THIS
+    socket.broadcast.emit("draw", line);
       });
 
       socket.on("draw", (data) => {
